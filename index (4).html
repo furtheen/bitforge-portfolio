@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BitForge | Modern Web Development & AI Automation</title>
+  <meta name="description" content="BitForge creates modern websites, e-commerce platforms, and AI-powered automation tools for businesses.">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --black: #080808;
+      --white: #F2F0EB;
+      --orange: #FF4D00;
+      --orange-dim: #CC3D00;
+      --steel: #1A1A1A;
+      --mid: #2E2E2E;
+      --muted: #888;
+      --forge-glow: rgba(255, 77, 0, 0.15);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Syne', sans-serif;
+      overflow-x: hidden;
+      cursor: none;
+      line-height: 1.6;
+    }
+
+    /* ─── CUSTOM CURSOR ─── */
+    .cursor {
+      position: fixed;
+      width: 12px; height: 12px;
+      background: var(--orange);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s, height 0.2s;
+    }
+    .cursor-ring {
+      position: fixed;
+      width: 36px; height: 36px;
+      border: 1px solid rgba(255,77,0,0.5);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s, height 0.3s, opacity 0.3s;
+    }
+
+    /* ─── NOISE OVERLAY ─── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.035;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    a { text-decoration: none; color: var(--white); transition: all 0.3s ease; }
+    ul { list-style: none; }
+
+    /* ─── NAVBAR ─── */
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 20px 48px;
+      background: rgba(8, 8, 8, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 1000;
+      border-bottom: 1px solid var(--mid);
+      transition: padding 0.3s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .navbar.scrolled { padding-top: 14px; padding-bottom: 14px; }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .wordmark {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 26px;
+      letter-spacing: 2px;
+    }
+    .wordmark .bit { color: var(--white); }
+    .wordmark .forge { color: var(--orange); }
+
+    .nav-links {
+      display: flex;
+      gap: 36px;
+    }
+    .nav-links a {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--white); }
+
+    .btn-nav {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 10px 24px;
+      border: 1px solid var(--orange);
+      color: var(--orange);
+      transition: all 0.3s;
+    }
+    .btn-nav:hover {
+      background: var(--orange);
+      color: var(--black);
+    }
+
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      cursor: pointer;
+    }
+    .menu-toggle .bar {
+      width: 24px;
+      height: 2px;
+      background: var(--white);
+      transition: 0.3s;
+    }
+
+    /* ─── HERO ─── */
+    .hero-section {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 120px 48px 60px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,77,0,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,77,0,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      animation: gridshift 20s linear infinite;
+    }
+
+    @keyframes gridshift {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(48px); }
+    }
+
+    .hero-glow {
+      position: absolute;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(255,77,0,0.10) 0%, transparent 70%);
+      top: -150px; right: -100px;
+      animation: pulse 5s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 0.6; }
+      100% { transform: scale(1.2); opacity: 1; }
+    }
+
+    .forge-line {
+      position: absolute;
+      right: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: linear-gradient(to bottom, transparent, var(--orange), transparent);
+      animation: scanline 3s ease-in-out infinite;
+    }
+
+    @keyframes scanline {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    .hero-eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: var(--orange);
+      text-transform: uppercase;
+      margin-bottom: 28px;
+      opacity: 0;
+      animation: fadeup 0.8s 0.2s forwards;
+    }
+
+    .hero-wordmark {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(72px, 13vw, 160px);
+      line-height: 0.92;
+      letter-spacing: -2px;
+      opacity: 0;
+      animation: fadeup 0.8s 0.4s forwards;
+    }
+
+    .hero-wordmark .accent {
+      color: var(--orange);
+      position: relative;
+    }
+
+    .hero-wordmark .accent::after {
+      content: '';
+      position: absolute;
+      bottom: 6px; left: 0; right: 0;
+      height: 4px;
+      background: var(--orange);
+      transform: scaleX(0);
+      transform-origin: left;
+      animation: lineReveal 0.6s 1.2s forwards;
+    }
+
+    @keyframes lineReveal { to { transform: scaleX(1); } }
+
+    .hero-tagline {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(16px, 2.2vw, 20px);
+      font-weight: 400;
+      color: var(--muted);
+      margin-top: 28px;
+      max-width: 500px;
+      line-height: 1.7;
+      opacity: 0;
+      animation: fadeup 0.8s 0.7s forwards;
+    }
+
+    .hero-tagline strong { color: var(--white); font-weight: 600; }
+
+    .hero-btns {
+      display: flex;
+      gap: 16px;
+      margin-top: 40px;
+      opacity: 0;
+      animation: fadeup 0.8s 0.9s forwards;
+    }
+
+    @keyframes fadeup {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .btn-primary {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 16px 36px;
+      background: var(--orange);
+      color: var(--black);
+      border: 1px solid var(--orange);
+      font-weight: 700;
+      transition: all 0.3s;
+    }
+    .btn-primary:hover {
+      background: transparent;
+      color: var(--orange);
+    }
+
+    .btn-outline {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 16px 36px;
+      border: 1px solid var(--mid);
+      color: var(--muted);
+      transition: all 0.3s;
+    }
+    .btn-outline:hover {
+      border-color: var(--white);
+      color: var(--white);
+    }
+
+    /* ─── SECTION BASE ─── */
+    section { padding: 100px 48px; position: relative; }
+
+    .section-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 5px;
+      color: var(--orange);
+      text-transform: uppercase;
+      margin-bottom: 48px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      max-width: 80px;
+      height: 1px;
+      background: var(--orange);
+      opacity: 0.4;
+    }
+
+    .section-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 5px;
+      color: var(--orange);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .section-tag::after {
+      content: '';
+      flex: 1;
+      max-width: 60px;
+      height: 1px;
+      background: var(--orange);
+      opacity: 0.4;
+    }
+
+    h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(40px, 5vw, 64px);
+      letter-spacing: 2px;
+      line-height: 1;
+      margin-bottom: 24px;
+      color: var(--white);
+    }
+
+    h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(28px, 3vw, 40px);
+      letter-spacing: 2px;
+      line-height: 1;
+      color: var(--white);
+    }
+
+    p {
+      color: var(--muted);
+      font-size: 16px;
+      margin-bottom: 16px;
+    }
+
+    /* ─── ABOUT SECTION ─── */
+    .about-section {
+      background: var(--steel);
+      border-top: 1px solid var(--mid);
+      border-bottom: 1px solid var(--mid);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .about-text p { max-width: 460px; line-height: 1.8; }
+
+    .about-visual {
+      display: flex;
+      justify-content: center;
+    }
+
+    .floating-card {
+      border: 1px solid var(--mid);
+      padding: 48px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+      background: var(--black);
+      animation: float 6s ease-in-out infinite;
+      position: relative;
+    }
+
+    .floating-card::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      background: linear-gradient(135deg, rgba(255,77,0,0.3), transparent 50%);
+      z-index: -1;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-14px); }
+    }
+
+    .card-stats {
+      display: flex;
+      gap: 40px;
+      border-top: 1px solid var(--mid);
+      padding-top: 24px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    .stat span {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 40px;
+      color: var(--orange);
+      letter-spacing: 2px;
+      line-height: 1;
+    }
+
+    /* ─── SERVICES SECTION ─── */
+    .services-section {
+      background: var(--black);
+    }
+
+    .section-header {
+      margin-bottom: 60px;
+    }
+    .section-header h2 { margin-bottom: 8px; }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2px;
+      background: var(--mid);
+    }
+
+    .service-card {
+      background: var(--black);
+      padding: 48px 40px;
+      transition: background 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .service-card::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      height: 2px; width: 0;
+      background: var(--orange);
+      transition: width 0.4s;
+    }
+
+    .service-card:hover { background: rgba(255,77,0,0.04); }
+    .service-card:hover::before { width: 100%; }
+
+    .service-icon {
+      font-size: 28px;
+      margin-bottom: 24px;
+      width: 56px; height: 56px;
+      background: var(--steel);
+      border: 1px solid var(--mid);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .service-card h3 {
+      font-size: 28px;
+      margin-bottom: 14px;
+    }
+
+    .service-card p { font-size: 14px; margin-bottom: 0; line-height: 1.7; }
+
+    /* ─── EXPERIENCE SECTION ─── */
+    .experience-section {
+      background: var(--steel);
+      border-top: 1px solid var(--mid);
+      border-bottom: 1px solid var(--mid);
+    }
+
+    .experience-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2px;
+      background: var(--mid);
+      margin-top: 0;
+    }
+
+    /* ─── PORTFOLIO SECTION ─── */
+    .portfolio-section {
+      background: var(--black);
+      padding: 100px 48px;
+      border-top: 1px solid var(--mid);
+      border-bottom: 1px solid var(--mid);
+    }
+
+    .portfolio-shell {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .case-block {
+      margin-bottom: 72px;
+    }
+    .case-block:last-child { margin-bottom: 0; }
+
+    .portfolio-section .section-label {
+      margin-bottom: 20px;
+    }
+
+    .intro-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      background: var(--mid);
+    }
+
+    .intro-panel {
+      background: var(--black);
+      padding: 48px;
+    }
+
+    .intro-panel h3 {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .intro-panel p {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      color: var(--muted);
+      margin-bottom: 0;
+      max-width: 480px;
+      line-height: 1.7;
+    }
+
+    .intro-headline {
+      background: var(--black);
+      padding: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .intro-headline h2 {
+      font-size: clamp(52px, 7vw, 76px);
+      margin: 0;
+    }
+
+    .preview-wrap {
+      background: var(--steel);
+      border-top: 1px solid var(--mid);
+      border-bottom: 1px solid var(--mid);
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .preview-shell {
+      width: min(100%, 940px);
+      background: var(--black);
+      border: 1px solid rgba(255, 77, 0, 0.2);
+      min-height: 340px;
+      padding: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .preview-shell:hover {
+      box-shadow: 0 0 24px rgba(255, 77, 0, 0.15);
+      border-color: rgba(255, 77, 0, 0.5);
+    }
+
+    .preview-mock {
+      position: relative;
+      width: 82%;
+      min-height: 220px;
+      border: 1px solid rgba(255, 77, 0, 0.18);
+      background: #0f0f0f;
+      overflow: hidden;
+      transition: border-color 0.3s;
+    }
+
+    .preview-shell:hover .preview-mock { border-color: var(--orange); }
+
+    .project-img {
+      width: 100%;
+      height: 100%;
+      min-height: 220px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+
+    .preview-mock:hover .project-img {
+      transform: scale(1.05);
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.62);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .preview-mock:hover .overlay {
+      opacity: 1;
+    }
+
+    .view-btn {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 12px 28px;
+      background: var(--orange);
+      color: var(--black);
+      text-decoration: none;
+      border: 1px solid var(--orange);
+      transition: all 0.3s ease;
+    }
+
+    .view-btn:hover {
+      background: transparent;
+      color: var(--orange);
+    }
+
+    .system-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 2px;
+      background: var(--mid);
+    }
+
+    .system-tile {
+      background: var(--black);
+      padding: 40px;
+      transition: all 0.3s ease;
+      min-height: 160px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .system-tile:hover {
+      background: rgba(255, 77, 0, 0.05);
+      box-shadow: inset 0 0 0 1px rgba(255, 77, 0, 0.22);
+    }
+
+    .tile-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 30px;
+      letter-spacing: 2px;
+      color: var(--white);
+      margin: 0 0 8px;
+      line-height: 1;
+    }
+
+    .tile-subtitle {
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .tech-stack {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 2px;
+      background: var(--mid);
+    }
+
+    .tech-item {
+      background: var(--black);
+      padding: 34px 30px;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .tech-item:hover {
+      color: var(--orange);
+      background: rgba(255, 77, 0, 0.05);
+    }
+
+    .result-section {
+      text-align: center;
+      padding: 12px 0 4px;
+    }
+
+    .result-section h2 {
+      font-size: clamp(40px, 6vw, 64px);
+      margin-bottom: 16px;
+    }
+
+    .result-section p {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      color: var(--muted);
+      margin: 0 auto;
+      max-width: 700px;
+    }
+
+    /* ─── WHY US SECTION ─── */
+    .why-section {
+      background: var(--steel);
+      border-top: 1px solid var(--mid);
+      border-bottom: 1px solid var(--mid);
+    }
+
+    .why-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .features-list {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      margin-top: 32px;
+    }
+
+    .features-list li {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    .feature-icon {
+      font-size: 22px;
+      min-width: 50px;
+      height: 50px;
+      background: var(--black);
+      border: 1px solid var(--mid);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .features-list h4 {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0;
+      margin-bottom: 4px;
+      color: var(--white);
+    }
+
+    .features-list p {
+      font-size: 14px;
+      margin-bottom: 0;
+      line-height: 1.6;
+    }
+
+    .why-image {
+      display: flex;
+      justify-content: center;
+    }
+
+    .forge-panel {
+      background: var(--black);
+      border: 1px solid var(--mid);
+      padding: 48px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .forge-panel::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      background: linear-gradient(135deg, rgba(255,77,0,0.25), transparent 50%);
+      z-index: 0;
+    }
+
+    .forge-panel > * { position: relative; z-index: 1; }
+
+    .forge-panel h3 {
+      font-size: 40px;
+      margin-bottom: 12px;
+    }
+
+    .forge-panel p { font-size: 15px; margin-bottom: 32px; }
+
+    /* ─── TICKER ─── */
+    .tagline-section {
+      overflow: hidden;
+      background: var(--orange);
+      padding: 18px 0;
+    }
+
+    .tagline-ticker {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 6px;
+      color: var(--black);
+      white-space: nowrap;
+      animation: ticker 18s linear infinite;
+    }
+
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ─── CONTACT SECTION ─── */
+    .contact-section {
+      background: var(--black);
+    }
+
+    .contact-box {
+      background: var(--steel);
+      border: 1px solid var(--mid);
+      display: flex;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .contact-info {
+      flex: 1;
+      padding: 64px;
+      z-index: 1;
+    }
+
+    .contact-details {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-bottom: 40px;
+      margin-top: 32px;
+    }
+
+    .c-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-family: 'Syne', sans-serif;
+    }
+
+    .c-item span { font-size: 18px; }
+
+    .c-item p {
+      margin: 0;
+      color: var(--white);
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .c-item.phone-item { align-items: flex-start; }
+
+    .phone-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 4px;
+    }
+
+    .phone-links a {
+      color: var(--white);
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 1px;
+      border-bottom: 1px solid transparent;
+      transition: all 0.3s;
+    }
+
+    .phone-links a:hover {
+      color: var(--orange);
+      border-bottom-color: var(--orange);
+    }
+
+    .contact-visual {
+      flex: 1;
+      background: var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      border-left: 1px solid var(--mid);
+    }
+
+    .contact-visual::before {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(255,77,0,0.1) 0%, transparent 70%);
+    }
+
+    .bg-logo {
+      opacity: 0.08;
+      transform: scale(2);
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--steel);
+      border-top: 1px solid var(--mid);
+      padding: 40px 48px;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .footer-wordmark {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 2px;
+    }
+
+    .footer-wordmark .forge-word { color: var(--orange); }
+
+    .footer-logo p {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 6px;
+      margin-bottom: 0;
+    }
+
+    .footer-note {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    /* ─── ANIMATIONS ─── */
+    .hidden {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── MODAL ─── */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      padding-top: 50px;
+      inset: 0;
+      background-color: rgba(8, 8, 8, 0.92);
+      backdrop-filter: blur(6px);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .modal.show-modal { display: block; opacity: 1; }
+
+    .modal-content {
+      margin: auto;
+      display: block;
+      width: 80%;
+      max-width: 1000px;
+      position: relative;
+      border: 1px solid var(--mid);
+      animation: zoomIn 0.3s ease;
+    }
+    .modal-content img { width: 100%; display: block; }
+
+    @keyframes zoomIn {
+      from { transform: scale(0.95); }
+      to { transform: scale(1); }
+    }
+
+    .close-modal {
+      position: absolute;
+      top: -44px; right: 0;
+      color: var(--muted);
+      font-size: 36px;
+      font-weight: bold;
+      transition: color 0.3s;
+      cursor: pointer;
+    }
+    .close-modal:hover { color: var(--orange); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 900px) {
+      .about-grid, .why-grid { grid-template-columns: 1fr; gap: 40px; }
+      .contact-box { flex-direction: column; }
+      .contact-visual { min-height: 200px; border-left: none; border-top: 1px solid var(--mid); }
+    }
+
+    @media (max-width: 768px) {
+      .navbar { padding: 16px 24px; }
+      .nav-links, .btn-nav { display: none; }
+      .menu-toggle { display: flex; }
+      .nav-links.active {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 100%; left: 0;
+        width: 100%;
+        background: var(--black);
+        padding: 24px;
+        border-bottom: 1px solid var(--mid);
+        gap: 20px;
+      }
+
+      section { padding: 60px 24px; }
+      .hero-section { padding: 100px 24px 60px; }
+      .portfolio-section { padding: 60px 24px; }
+      footer { padding: 32px 24px; }
+      .contact-info { padding: 40px 24px; }
+
+      .hero-btns { flex-direction: column; align-items: flex-start; }
+
+      .intro-grid { grid-template-columns: 1fr; }
+      .intro-panel, .intro-headline { padding: 32px 24px; text-align: center; }
+      .preview-wrap { padding: 20px; }
+      .preview-mock { width: 100%; }
+      .system-tile { text-align: center; }
+      .portfolio-section .section-label { justify-content: center; }
+    }
+
+    @media (max-width: 700px) {
+      .modal-content { width: 95%; }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- Custom Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Navigation -->
+<nav class="navbar">
+  <a href="#" class="logo">
+    <svg width="38" height="38" viewBox="0 0 72 72" fill="none">
+      <rect x="8" y="8" width="24" height="24" fill="#FF4D00"/>
+      <rect x="8" y="40" width="24" height="24" fill="#FF4D00" opacity="0.4"/>
+      <rect x="40" y="8" width="24" height="56" fill="#FF4D00" opacity="0.7"/>
+      <rect x="40" y="8" width="24" height="8" fill="#FF4D00"/>
+      <rect x="40" y="32" width="24" height="8" fill="#FF4D00"/>
+    </svg>
+    <span class="wordmark"><span class="bit">BIT</span><span class="forge">FORGE</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="#why-us">Why Us</a></li>
+  </ul>
+  <a href="#contact" class="btn-nav">Get a Quote</a>
+  <div class="menu-toggle" id="mobile-menu">
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+  </div>
+</nav>
+
+<!-- Hero -->
+<header id="hero" class="hero-section">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="forge-line"></div>
+
+  <p class="hero-eyebrow">// Web Development · AI Automation · Karaikudi</p>
+  <h1 class="hero-wordmark">
+    Building Websites<br>
+    That <span class="accent">Grow</span><br>
+    Businesses.
+  </h1>
+  <p class="hero-tagline">
+    <strong>BitForge</strong> helps local businesses go digital the right way — with websites that convert and AI systems that save time. We don't just build sites. We build engines.
+  </p>
+  <div class="hero-btns">
+    <a href="#contact" class="btn-primary">Get a Free Quote</a>
+    <a href="#portfolio" class="btn-outline">View Our Work</a>
+  </div>
+</header>
+
+<!-- Ticker -->
+<div class="tagline-section">
+  <div class="tagline-ticker">
+    BUILD · AUTOMATE · SCALE · &nbsp;&nbsp; BUILD · AUTOMATE · SCALE · &nbsp;&nbsp; BUILD · AUTOMATE · SCALE · &nbsp;&nbsp; BUILD · AUTOMATE · SCALE · &nbsp;&nbsp; BUILD · AUTOMATE · SCALE · &nbsp;&nbsp; BUILD · AUTOMATE · SCALE · &nbsp;&nbsp;
+  </div>
+</div>
+
+<!-- About -->
+<section id="about" class="about-section hidden">
+  <div class="about-grid">
+    <div class="about-text">
+      <p class="section-tag">01 — About</p>
+      <h2>We Forge The Future Of Your Business Online.</h2>
+      <p>BitForge helps businesses build modern websites, e-commerce platforms, and AI-powered automation tools. We don't just build sites — we build digital experiences that drive real results, combining sharp aesthetics with cutting-edge tech.</p>
+    </div>
+    <div class="about-visual">
+      <div class="floating-card">
+        <svg width="64" height="64" viewBox="0 0 72 72" fill="none">
+          <rect x="8" y="8" width="24" height="24" fill="#FF4D00"/>
+          <rect x="8" y="40" width="24" height="24" fill="#FF4D00" opacity="0.4"/>
+          <rect x="40" y="8" width="24" height="56" fill="#FF4D00" opacity="0.7"/>
+          <rect x="40" y="8" width="24" height="8" fill="#FF4D00"/>
+          <rect x="40" y="32" width="24" height="8" fill="#FF4D00"/>
+        </svg>
+        <div class="card-stats">
+          <div class="stat"><span>100%</span> Modern</div>
+          <div class="stat"><span>24/7</span> Automated</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Services -->
+<section id="services" class="services-section hidden">
+  <div class="section-header">
+    <p class="section-tag">02 — Services</p>
+    <h2>What We Forge</h2>
+  </div>
+  <div class="services-grid">
+    <div class="service-card">
+      <div class="service-icon">💻</div>
+      <h3>Business Website Development</h3>
+      <p>Beautiful, fast, and responsive websites that put your brand's best foot forward and convert visitors.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🛒</div>
+      <h3>E-commerce Development</h3>
+      <p>Robust online stores designed to convert visitors into loyal customers seamlessly with full payment integration.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🤖</div>
+      <h3>AI Automation</h3>
+      <p>Streamline your business operations with intelligent AI-powered chatbots and WhatsApp automation solutions.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🛠️</div>
+      <h3>Website Maintenance</h3>
+      <p>Keep your platform secure, fast, and up-to-date with our reliable maintenance and support plans.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Experience -->
+<section id="experience" class="experience-section hidden">
+  <div class="section-header">
+    <p class="section-tag">03 — Experience</p>
+    <h2>Real-World Skills & Expertise</h2>
+    <p>We have 1.5 years of experience in AI and programming, building real-world applications including e-commerce platforms, educational systems, and business websites. Our expertise includes frontend-backend integration, live deployment, and payment gateway integration.</p>
+  </div>
+  <div class="experience-grid">
+    <div class="service-card">
+      <div class="service-icon">🛒</div>
+      <h3>E-commerce Development</h3>
+      <p>Online ordering systems with payment integration</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🧩</div>
+      <h3>Full Stack Development</h3>
+      <p>Frontend + backend connected and deployed live</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🤖</div>
+      <h3>AI & Automation</h3>
+      <p>Smart solutions to automate business workflows</p>
+    </div>
+  </div>
+</section>
+
+<!-- Portfolio -->
+<section id="portfolio" class="portfolio-section hidden">
+  <div class="portfolio-shell">
+
+    <!-- 01 -->
+    <div class="case-block">
+      <div class="section-label">01 — Project</div>
+      <div class="intro-grid">
+        <div class="intro-panel">
+          <h3>Crumble & Co</h3>
+          <p>Brownie e-commerce platform with online ordering and payment integration</p>
+        </div>
+        <div class="intro-headline">
+          <h2>Ecommerce Experience</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- 02 -->
+    <div class="case-block">
+      <div class="section-label">02 — Visual Preview</div>
+      <div class="preview-wrap">
+        <div class="preview-shell">
+          <div class="preview-mock">
+            <img src="images/crumble.png" alt="Crumble & Co" class="project-img">
+            <div class="overlay">
+              <a href="https://brownie-frontend-psi.vercel.app/" target="_blank" class="view-btn">View Project</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 03 -->
+    <div class="case-block">
+      <div class="section-label">03 — Features / Build</div>
+      <div class="system-grid">
+        <div class="system-tile">
+          <p class="tile-title">Online Ordering</p>
+          <p class="tile-subtitle">Customers can browse brownies and place orders seamlessly.</p>
+        </div>
+        <div class="system-tile">
+          <p class="tile-title">Secure Payment</p>
+          <p class="tile-subtitle">Integrated Razorpay flow for reliable payment processing.</p>
+        </div>
+        <div class="system-tile">
+          <p class="tile-title">Admin Dashboard</p>
+          <p class="tile-subtitle">Order tracking and management for day-to-day operations.</p>
+        </div>
+        <div class="system-tile">
+          <p class="tile-title">Mobile Responsive</p>
+          <p class="tile-subtitle">Optimized experience across phones, tablets, and desktop.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 04 -->
+    <div class="case-block">
+      <div class="section-label">04 — Tech Stack</div>
+      <div class="tech-stack">
+        <div class="tech-item">HTML / CSS / JS</div>
+        <div class="tech-item">ASP.NET Core API</div>
+        <div class="tech-item">SQL Database</div>
+        <div class="tech-item">Razorpay Integration</div>
+      </div>
+    </div>
+
+    <!-- 05 -->
+    <div class="case-block result-section">
+      <div class="section-label" style="justify-content:center;">05 — Result / Impact</div>
+      <h2>Built For Real Business Use</h2>
+      <p>This platform enables customers to order brownies online with seamless checkout and admin control.</p>
+    </div>
+
+    <!-- ─── PROJECT 02 — COACHING INSTITUTE ─── -->
+
+    <!-- 06 -->
+    <div class="case-block">
+      <div class="section-label">06 — Project</div>
+      <div class="intro-grid">
+        <div class="intro-panel">
+          <h3>Coaching Institute</h3>
+          <p>Online coaching platform for managing courses, students, and content delivery.</p>
+        </div>
+        <div class="intro-headline">
+          <h2>Learning Platform</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- 07 -->
+    <div class="case-block">
+      <div class="section-label">07 — Visual Preview</div>
+      <div class="preview-wrap">
+        <div class="preview-shell">
+          <div class="preview-mock">
+            <img src="images/coaching.png" alt="Coaching Institute" class="project-img">
+            <div class="overlay">
+              <a href="https://coaching-institute-frontend-l6sc.vercel.app/" target="_blank" class="view-btn">View Project</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 08 -->
+    <div class="case-block">
+      <div class="section-label">08 — Features / Build</div>
+      <div class="system-grid">
+        <div class="system-tile">
+          <p class="tile-title">Course Management</p>
+          <p class="tile-subtitle">Instructors can create, organise, and publish courses with ease.</p>
+        </div>
+        <div class="system-tile">
+          <p class="tile-title">Student Dashboard</p>
+          <p class="tile-subtitle">Personalised space for students to track progress and access materials.</p>
+        </div>
+        <div class="system-tile">
+          <p class="tile-title">Video Lessons</p>
+          <p class="tile-subtitle">Embedded video content delivery for a seamless learning experience.</p>
+        </div>
+        <div class="system-tile">
+          <p class="tile-title">Responsive UI</p>
+          <p class="tile-subtitle">Fully optimised interface across all devices and screen sizes.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 09 -->
+    <div class="case-block">
+      <div class="section-label">09 — Tech Stack</div>
+      <div class="tech-stack">
+        <div class="tech-item">HTML / CSS / JS</div>
+        <div class="tech-item">ASP.NET Core API</div>
+        <div class="tech-item">SQL Database</div>
+        <div class="tech-item">Authentication System</div>
+      </div>
+    </div>
+
+    <!-- 10 -->
+    <div class="case-block result-section">
+      <div class="section-label" style="justify-content:center;">10 — Result / Impact</div>
+      <h2>Simplified Online Teaching</h2>
+      <p>Built to simplify online teaching and student management with a smooth digital experience.</p>
+    </div>
+
+    <!-- ─── PROJECT 03 — PREMIUM RESTAURANT ─── -->
+
+    <!-- 11 -->
+    <div class="case-block">
+      <div class="section-label">11 — Project</div>
+      <div class="intro-grid">
+        <div class="intro-panel">
+          <h3>Premium Restaurant</h3>
+          <p>High-end restaurant website with table booking and premium UI experience.</p>
+        </div>
+        <div class="intro-headline">
+          <h2>Dining Experience System</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- 12 -->
+    <div class="case-block">
+      <div class="section-label">12 — Visual Preview</div>
+      <div class="preview-wrap">
+        <div class="preview-shell">
+          <div class="preview-mock">
+            <img src="images/restaurant.png" alt="Premium Restaurant" class="project-img">
+            <div class="overlay">
+              <a href="/restaurant.html" class="view-btn">View Project</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 13 -->
+    <div class="case-block">
+      <div class="section-label">13 — Features / Build</div>
+      <div class="system-grid">
+        <div class="system-tile">
+          <p class="tile-title">Table Reservation</p>
+          <p class="tile-subtitle">Guests can book tables in real-time with instant confirmation.</p>
+        </div>
+        <div class="system-tile">
+          <p class="tile-title">Menu Showcase</p>
+          <p class="tile-subtitle">Elegant digital menu with high-quality visuals and descriptions.</p>
+        </div>
+        <div class="system-tile">
+          <p class="tile-title">Admin Booking Control</p>
+          <p class="tile-subtitle">Full reservation management dashboard for restaurant staff.</p>
+        </div>
+        <div class="system-tile">
+          <p class="tile-title">Mobile Optimization</p>
+          <p class="tile-subtitle">Premium experience preserved flawlessly on every device size.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 14 -->
+    <div class="case-block">
+      <div class="section-label">14 — Tech Stack</div>
+      <div class="tech-stack">
+        <div class="tech-item">HTML / CSS / JS</div>
+        <div class="tech-item">Backend API</div>
+        <div class="tech-item">Database</div>
+        <div class="tech-item">Payment Integration (optional)</div>
+      </div>
+    </div>
+
+    <!-- 15 -->
+    <div class="case-block result-section">
+      <div class="section-label" style="justify-content:center;">15 — Result / Impact</div>
+      <h2>Premium Digital Dining</h2>
+      <p>Designed to enhance restaurant bookings and deliver a premium digital dining experience.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- Why Us -->
+<section id="why-us" class="why-section hidden">
+  <div class="why-grid">
+    <div class="why-text">
+      <p class="section-tag">04 — Why BitForge?</p>
+      <h2>Built For Performance & Growth.</h2>
+      <ul class="features-list">
+        <li>
+          <div class="feature-icon">⚡</div>
+          <div>
+            <h4>Fast Modern Websites</h4>
+            <p>We use the latest tech to ensure your site is lightning fast and conversion-ready.</p>
+          </div>
+        </li>
+        <li>
+          <div class="feature-icon">📱</div>
+          <div>
+            <h4>Mobile Optimized</h4>
+            <p>Flawless experiences across all devices and screen sizes, every time.</p>
+          </div>
+        </li>
+        <li>
+          <div class="feature-icon">💰</div>
+          <div>
+            <h4>Affordable for Local Businesses</h4>
+            <p>Premium quality that fits within your business budget. No compromises.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="why-image">
+      <div class="forge-panel">
+        <h3>Ready To Scale?</h3>
+        <p>Let's build something extraordinary together that grows your business.</p>
+        <a href="#contact" class="btn-primary">Start Now</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact -->
+<section id="contact" class="contact-section hidden">
+  <div class="contact-box">
+    <div class="contact-info">
+      <p class="section-tag">05 — Let's Connect</p>
+      <h2>Start Your Project Today</h2>
+      <p>Ready to upgrade your digital presence? We're here to help you build the perfect solution for your business.</p>
+      <div class="contact-details">
+        <div class="c-item">
+          <span>📩</span>
+          <p>bitforge.service@gmail.com</p>
+        </div>
+        <div class="c-item phone-item">
+          <span>📞</span>
+          <div class="phone-links">
+            <a href="tel:8883289612">8883289612</a>
+            <a href="tel:6380685082">6380685082</a>
+          </div>
+        </div>
+        <div class="c-item">
+          <span>📍</span>
+          <p>Karaikudi & Pudukottai, Tamil Nadu</p>
+        </div>
+      </div>
+      <a href="mailto:bitforge.service@gmail.com" class="btn-primary">Start Your Project</a>
+    </div>
+    <div class="contact-visual">
+      <svg width="200" height="200" viewBox="0 0 72 72" fill="none" class="bg-logo">
+        <rect x="8" y="8" width="24" height="24" fill="#FF4D00"/>
+        <rect x="8" y="40" width="24" height="24" fill="#FF4D00" opacity="0.4"/>
+        <rect x="40" y="8" width="24" height="56" fill="#FF4D00" opacity="0.7"/>
+        <rect x="40" y="8" width="24" height="8" fill="#FF4D00"/>
+        <rect x="40" y="32" width="24" height="8" fill="#FF4D00"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-content">
+    <div class="footer-logo">
+      <div class="footer-wordmark">BIT<span class="forge-word">FORGE</span></div>
+      <p>Web Dev & AI Automation · Karaikudi · 2026</p>
+    </div>
+    <div class="footer-note">© 2026 BitForge. All Rights Reserved.</div>
+  </div>
+</footer>
+
+<!-- Modal -->
+<div id="project-modal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal">&times;</span>
+    <img id="modal-img" src="" alt="Project Full View">
+  </div>
+</div>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+  });
+
+  function animateRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, button, .service-card, .system-tile, .tech-item').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.width = '20px';
+      cursor.style.height = '20px';
+      ring.style.width = '56px';
+      ring.style.height = '56px';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.width = '12px';
+      cursor.style.height = '12px';
+      ring.style.width = '36px';
+      ring.style.height = '36px';
+    });
+  });
+
+  // Mobile menu
+  const mobileMenu = document.getElementById('mobile-menu');
+  const navLinks = document.querySelector('.nav-links');
+  if (mobileMenu) {
+    mobileMenu.addEventListener('click', () => navLinks.classList.toggle('active'));
+  }
+
+  // Navbar scroll
+  const navbar = document.querySelector('.navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 50);
+  });
+
+  // Intersection observer
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('show');
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.hidden').forEach(el => observer.observe(el));
+
+  // Smooth scroll
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      if (navLinks.classList.contains('active')) navLinks.classList.remove('active');
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - 80, behavior: 'smooth' });
+      }
+    });
+  });
+
+  // Modal
+  const modal = document.getElementById('project-modal');
+  const modalImg = document.getElementById('modal-img');
+  const closeModal = document.querySelector('.close-modal');
+
+  document.querySelectorAll('.project-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      modalImg.src = this.getAttribute('href');
+      modal.classList.add('show-modal');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+
+  if (closeModal) closeModal.addEventListener('click', () => {
+    modal.classList.remove('show-modal');
+    document.body.style.overflow = 'auto';
+  });
+
+  if (modal) modal.addEventListener('click', e => {
+    if (e.target === modal) {
+      modal.classList.remove('show-modal');
+      document.body.style.overflow = 'auto';
+    }
+  });
+</script>
+</body>
+</html>
